@@ -4,9 +4,12 @@ Docker build of jupyterlab with Aero design software installed:
 Xfoil -  https://web.mit.edu/drela/Public/web/xfoil/
    compiled with intel fortran compiler.  compiler docker image is 6gb so make sure you have space
    I tried the gnu fortran compiler but compiled program was unstable.
+
 AVL -  https://web.mit.edu/drela/Public/web/avl/
    compiled with intel fortran compiler
+
 AeroSandbox - latest released version
+
 (more softwares can be added)
 
 Building
