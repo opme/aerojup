@@ -1,5 +1,4 @@
 # install xfoil  (taken from https://github.com/thomaseizinger/docker-xfoil/)
-# and modified to use the intel compiler
 FROM intel/oneapi-hpckit:latest as xfoil
 RUN apt-get update
 RUN apt-get install -y wget
@@ -41,34 +40,27 @@ RUN make
 WORKDIR /Avl/bin
 RUN make
 
-
 #
 # base image
 #
 FROM continuumio/anaconda3
 EXPOSE 8888
-
 # copy xfoil binaries
 COPY --from=xfoil /usr/local/bin/xfoil /usr/bin
 COPY --from=xfoil /usr/local/bin/pplot /usr/bin
 COPY --from=xfoil /usr/local/bin/pxplot /usr/bin
-
-# copy avl binaries
-COPY --from=avl /Avl/bin/avl /usr/bin
-
-# set LD_LIBRARY_PATH
 ENV LD_LIBRARY_PATH="/opt/conda/lib:${LD_LIBRARY_PATH}"
-
 
 # install openscad
 #RUN apt-get update && apt-get install -y \
 #   openscad
 
-# install AeroSandbox latest releaseed version.
-RUN pip install AeroSandbox
+# install AeroSandbox. ADRpy aerospace libraries
+RUN pip install AeroSandbox ADRpy
 
 # copy ipython notebook
 COPY aerodesign.ipynb /
+COPY airfoils /airfoils
 
 # add command
 CMD ["jupyter", "lab", "--ip='0.0.0.0'", "--port=8888", "--no-browser", "--allow-root"]
