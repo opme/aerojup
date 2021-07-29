@@ -35,8 +35,8 @@ Building
 cd docker
 docker build -t aerodesign ./
 
-![Airfoil 2D](airfoil.PNG)
+![Airfoil 2D](airfoil.png)
 
-![Polars](polar.PNG)
+![Polars](polar.png)
 
-![V-N Diagram](vndiagram.PNG)
+![V-N Diagram](vndiagram.png)
