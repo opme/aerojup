@@ -35,10 +35,6 @@ Building
 cd docker
 docker build -t aerodesign ./
 
--rwxr-xr-x  1 mshamber mshamber   30593 Jul 29 13:46 airfoil.PNG
--rwxr-xr-x  1 mshamber mshamber  129969 Jul 29 13:46 polar.PNG
--rwxr-xr-x  1 mshamber mshamber   93221 Jul 29 13:46 vndiagram.PNG
-
 ![Airfoil 2D](airfoil.PNG)
 
 ![Polars](polar.PNG)
