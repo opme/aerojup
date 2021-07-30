@@ -76,7 +76,7 @@ FROM continuumio/anaconda3
 EXPOSE 8888
 
 RUN apt-get update
-RUN apt-get install -y unzip
+RUN apt-get install -y unzip libcminpack-dev
 
 # copy xfoil binaries
 COPY --from=xfoil /usr/local/bin/xfoil /usr/bin
@@ -85,12 +85,18 @@ COPY --from=xfoil /usr/local/bin/pxplot /usr/bin
 ENV LD_LIBRARY_PATH="/opt/conda/lib:${LD_LIBRARY_PATH}"
 
 # install openvsp
-RUN mkdir /usr/local/openvsp
-COPY --from=openvsp /usr/local/openvsp /usr/local/openvsp
+RUN mkdir -p /usr/local/openvsp /opt/conda/lib/python3.8/site-packages/openvsp
 COPY --from=openvsp /OpenVSP-OpenVSP-9b64795/SuperProject/build/OpenVSP-prefix/src/OpenVSP-build/OpenVSP-3.24.0-Linux.zip /usr/local/openvsp
-
 WORKDIR /usr/local/openvsp
 RUN unzip OpenVSP-3.24.0-Linux.zip
+WORKDIR /usr/local/openvsp/OpenVSP-3.24.0-Linux/python/utilities
+RUN pip install .
+WORKDIR /usr/local/openvsp/OpenVSP-3.24.0-Linux/python/degen_geom
+RUN pip install .
+WORKDIR /usr/local/openvsp/OpenVSP-3.24.0-Linux/python/openvsp
+RUN pip install .
+WORKDIR /usr/local/openvsp/OpenVSP-3.24.0-Linux/python/AvlPy
+RUN pip install .
 
 # install AeroSandbox. ADRpy aerospace libraries
 RUN pip install AeroSandbox ADRpy
