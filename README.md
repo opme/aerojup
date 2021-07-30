@@ -8,9 +8,12 @@ https://web.mit.edu/drela/Public/web/xfoil/
 AVL - aerodynamic and flight-dynamic analysis of rigid aircraft of arbitrary configuration.
 https://web.mit.edu/drela/Public/web/avl/
 
-AeroSandbox - latest released version
+AeroSandbox -  Aircraft design optimization made fast through modern automatic differentiation.
+https://github.com/peterdsharpe/AeroSandbox
 
 ADRPy - Aircraft Design Recipes in Python, https://github.com/sobester/ADRpy
+
+OpenVSP - 3D parametric vehicle sketch pad with python api.  http://openvsp.org/.
 
 (more softwares can be added)
 
