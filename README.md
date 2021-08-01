@@ -43,3 +43,5 @@ docker build -t aerodesign ./
 ![Polars](polar.png)
 
 ![V-N Diagram](vndiagram.png)
+
+![OpenVSP View](openvsp_stl.png)

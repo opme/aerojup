@@ -102,7 +102,7 @@ RUN pip install .
 RUN pip install AeroSandbox ADRpy pythreejs numpy-stl
 
 # copy ipython notebook
-COPY aerodesign.ipynb api.py /
+COPY aerodesign.ipynb /
 COPY sample /sample
 
 # add command
