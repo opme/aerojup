@@ -99,7 +99,7 @@ WORKDIR /usr/local/openvsp/OpenVSP-3.24.0-Linux/python/AvlPy
 RUN pip install .
 
 # install AeroSandbox. ADRpy aerospace libraries
-RUN pip install AeroSandbox ADRpy pythreejs numpy-stl
+RUN pip install AeroSandbox==3.1.3 ADRpy pythreejs numpy-stl
 
 # copy ipython notebook
 COPY aerodesign.ipynb /
