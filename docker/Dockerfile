@@ -76,7 +76,7 @@ FROM continuumio/anaconda3
 EXPOSE 8888
 
 RUN apt-get update
-RUN apt-get install -y unzip libcminpack-dev
+RUN apt-get install -y unzip libcminpack-dev ffmpeg libsm6 libxext6
 
 # copy xfoil binaries
 COPY --from=xfoil /usr/local/bin/xfoil /usr/bin
@@ -99,7 +99,10 @@ WORKDIR /usr/local/openvsp/OpenVSP-3.24.0-Linux/python/AvlPy
 RUN pip install .
 
 # install AeroSandbox. ADRpy aerospace libraries
-RUN pip install AeroSandbox==3.1.3 ADRpy pythreejs numpy-stl
+RUN pip install ADRpy pythreejs numpy-stl ipygany
+RUN pip install git+https://github.com/opme/AeroSandbox.git@openvsp
+COPY requirements.txt /
+RUN pip install -r /requirements.txt
 
 # copy ipython notebook
 COPY aerodesign.ipynb /
