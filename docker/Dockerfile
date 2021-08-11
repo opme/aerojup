@@ -133,16 +133,16 @@ COPY --from=avl /Avl/bin/avl /usr/local/bin
 
 # install openvsp
 RUN mkdir -p /usr/local/openvsp /opt/conda/lib/python3.8/site-packages/openvsp
-COPY --from=openvsp /OpenVSP-OpenVSP-9b64795/SuperProject/build/OpenVSP-prefix/src/OpenVSP-build/OpenVSP-3.24.0-Linux.zip /usr/local/openvsp
+COPY --from=openvsp /OpenVSP-OpenVSP-4498334/SuperProject/build/OpenVSP-prefix/src/OpenVSP-build/OpenVSP-3.25.0-Linux.zip /usr/local/openvsp
 WORKDIR /usr/local/openvsp
-RUN unzip OpenVSP-3.24.0-Linux.zip
-WORKDIR /usr/local/openvsp/OpenVSP-3.24.0-Linux/python/utilities
+RUN unzip OpenVSP-3.25.0-Linux.zip
+WORKDIR /usr/local/openvsp/OpenVSP-3.25.0-Linux/python/utilities
 RUN pip install .
-WORKDIR /usr/local/openvsp/OpenVSP-3.24.0-Linux/python/degen_geom
+WORKDIR /usr/local/openvsp/OpenVSP-3.25.0-Linux/python/degen_geom
 RUN pip install .
-WORKDIR /usr/local/openvsp/OpenVSP-3.24.0-Linux/python/openvsp
+WORKDIR /usr/local/openvsp/OpenVSP-3.25.0-Linux/python/openvsp
 RUN pip install .
-WORKDIR /usr/local/openvsp/OpenVSP-3.24.0-Linux/python/AvlPy
+WORKDIR /usr/local/openvsp/OpenVSP-3.25.0-Linux/python/AvlPy
 RUN pip install .
 
 # install calculix
