@@ -1,4 +1,7 @@
-# install xfoil  (taken from https://github.com/thomaseizinger/docker-xfoil/)
+# aerospace software
+# author: Michael Shamberger
+
+# build xfoil
 FROM intel/oneapi-hpckit:latest as xfoil
 RUN apt-get update
 RUN apt-get install -y wget
@@ -22,7 +25,7 @@ RUN make pplot
 RUN make pxplot
 WORKDIR /Xfoil
 
-# install avl
+# build avl
 FROM intel/oneapi-hpckit:latest as avl
 RUN apt-get update
 RUN apt-get install -y wget
@@ -40,16 +43,17 @@ RUN make
 WORKDIR /Avl/bin
 RUN make
 
+# build openvsp
 FROM continuumio/anaconda3 as openvsp
 RUN apt-get update
 ENV TZ=Europe/Minsk
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get install -y wget cmake libxml2-dev g++ libjpeg-dev libglm-dev libeigen3-dev libcminpack-dev libglew-dev swig
 WORKDIR /
-RUN wget -O - https://github.com/OpenVSP/OpenVSP/tarball/OpenVSP_3.24.0 | tar xz
+RUN wget -O - https://github.com/OpenVSP/OpenVSP/tarball/OpenVSP_3.25.0 | tar xz
 RUN mkdir -p /OpenVSP-OpenVSP-9b64795/SuperProject/build
 RUN mkdir -p /usr/local/openvsp
-WORKDIR /OpenVSP-OpenVSP-9b64795/SuperProject/build
+WORKDIR /OpenVSP-OpenVSP-4498334/SuperProject/build
 RUN cmake .. \
         -DCMAKE_INSTALL_PREFIX=/usr/local/openvsp \
         -DVSP_NO_GRAPHICS=true \
@@ -69,6 +73,46 @@ RUN cmake .. \
         -DPYTHON_INCLUDE_PATH='/opt/conda/include'
 RUN make
 
+
+# install calculix
+# build spooles
+FROM intel/oneapi-hpckit:latest as spooles
+RUN apt-get update
+RUN apt-get install -y wget git
+WORKDIR /tmp
+RUN wget http://www.netlib.org/linalg/spooles/spooles.2.2.tgz && \
+    mkdir spooles.2.2 && \
+    cd spooles.2.2 && \
+    tar -xvzf ../spooles.2.2.tgz
+COPY calculix/spools.Make.inc /tmp/spooles.2.2/Make.inc
+RUN cd spooles.2.2 && \
+    make lib
+# build arpack
+FROM intel/oneapi-hpckit:latest as arpack
+RUN apt-get update
+RUN apt-get install -y wget git
+WORKDIR /tmp
+RUN wget https://www.caam.rice.edu/software/ARPACK/SRC/arpack96.tar.gz && \
+    wget https://www.caam.rice.edu/software/ARPACK/SRC/patch.tar.gz && \
+    tar -xvzf arpack96.tar.gz && \
+    tar -xvzf patch.tar.gz
+COPY calculix/ARmake.inc /tmp/ARPACK
+RUN cd ARPACK && \
+    make lib
+# build calculix
+FROM intel/oneapi-hpckit:latest as calculix
+RUN apt-get update
+RUN apt-get install -y wget git
+WORKDIR /tmp
+COPY --from=spooles /tmp/spooles.2.2 /tmp/spooles.2.2
+COPY --from=arpack /tmp/ARPACK /tmp/ARPACK
+RUN wget http://www.dhondt.de/ccx_2.17.src.tar.bz2 && \
+    bunzip2 ccx_2.17.src.tar.bz2 && \
+    tar xvf ccx_2.17.src.tar
+COPY calculix/Makefile /tmp/CalculiX/ccx_2.17/src
+RUN cd CalculiX/ccx_2.17/src && \
+    make
+
 #
 # base image
 #
@@ -79,10 +123,13 @@ RUN apt-get update
 RUN apt-get install -y unzip libcminpack-dev ffmpeg libsm6 libxext6
 
 # copy xfoil binaries
-COPY --from=xfoil /usr/local/bin/xfoil /usr/bin
-COPY --from=xfoil /usr/local/bin/pplot /usr/bin
-COPY --from=xfoil /usr/local/bin/pxplot /usr/bin
+COPY --from=xfoil /usr/local/bin/xfoil /usr/local/bin
+COPY --from=xfoil /usr/local/bin/pplot /usr/local/bin
+COPY --from=xfoil /usr/local/bin/pxplot /usr/local/bin
 ENV LD_LIBRARY_PATH="/opt/conda/lib:${LD_LIBRARY_PATH}"
+
+# copy avl binaries
+COPY --from=avl /Avl/bin/avl /usr/local/bin
 
 # install openvsp
 RUN mkdir -p /usr/local/openvsp /opt/conda/lib/python3.8/site-packages/openvsp
@@ -97,6 +144,9 @@ WORKDIR /usr/local/openvsp/OpenVSP-3.24.0-Linux/python/openvsp
 RUN pip install .
 WORKDIR /usr/local/openvsp/OpenVSP-3.24.0-Linux/python/AvlPy
 RUN pip install .
+
+# install calculix
+COPY --from=calculix /tmp/CalculiX/ccx_2.17/src/ccx_2.17 /usr/local/bin
 
 # install AeroSandbox. ADRpy aerospace libraries
 COPY requirements.txt /
