@@ -120,7 +120,7 @@ FROM continuumio/anaconda3
 EXPOSE 8888
 
 RUN apt-get update
-RUN apt-get install -y unzip libcminpack-dev ffmpeg libsm6 libxext6
+RUN apt-get install -y unzip wget git vim libcminpack-dev ffmpeg libsm6 libxext6
 
 # copy xfoil binaries
 COPY --from=xfoil /usr/local/bin/xfoil /usr/local/bin
@@ -145,14 +145,21 @@ RUN pip install .
 WORKDIR /usr/local/openvsp/OpenVSP-3.25.0-Linux/python/AvlPy
 RUN pip install .
 
-# install calculix
+# install calculix and ccx2paraview
 COPY --from=calculix /tmp/CalculiX/ccx_2.17/src/ccx_2.17 /usr/local/bin
+RUN pip install vtk ccx2paraview
 
 # install AeroSandbox. ADRpy aerospace libraries
 COPY requirements.txt /
 RUN pip install -r /requirements.txt
 RUN pip install ADRpy pythreejs numpy-stl ipygany
 RUN pip install git+https://github.com/opme/AeroSandbox.git@4eda7db92ea50ff283c4bfafd4eb1cffc1bd724c
+
+# try out openaerostruct and openmdao
+WORKDIR /tmp
+RUN git clone https://github.com/mdolab/OpenAeroStruct.git && \
+    cd OpenAeroStruct && \
+    pip install -e .
 
 # copy ipython notebook
 COPY aerodesign.ipynb /
